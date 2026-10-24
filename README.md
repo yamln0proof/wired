@@ -65,9 +65,8 @@ bin/wired example.com
 
 Use `wired -h` or `wired --help` to display command usage.
 
-On confirmation, Nmap checks the 100 most common TCP ports using its polite
-timing profile and saves a normal-format report in the same folder. The active
-ffuf fuzzing helpers are not run automatically.
+On confirmation, Nmap scans for common TCP ports using its polite
+timing profile and saves a normal-format report in the same folder.
 
 ## Installation
 

@@ -1,0 +1,18 @@
+# Wired  Copyright (C) 2026  Nabil Ahmed
+
+
+
+whois_scan()
+{
+    whois $DOMAIN > ip.txt
+}
+
+nslookup_scan()
+{
+    nslookup $DOMAIN > ns.txt
+}
+
+traceroute_scan()
+{
+    traceroute $IP > netroute.txt
+}

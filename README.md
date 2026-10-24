@@ -10,8 +10,6 @@ An optional second argument sets the output file.
 
 ```bash
 source lib/fuzzing.lib
-subdomain_fuzz example.com
-subdomain_fuzz example.com results.txt
 ```
 
 The `ffuf` executable must be installed and available in `PATH`.
@@ -24,8 +22,6 @@ file.
 
 ```bash
 source lib/dns.lib
-whois_scan example.com
-whois_scan example.com example-whois.txt
 ```
 
 The `whois` command must be installed and available in `PATH`.
@@ -38,8 +34,7 @@ output file.
 
 ```bash
 source lib/dns.lib
-nslookup_scan example.com
-nslookup_scan example.com example-dns.txt
+
 ```
 
 The `nslookup` command must be installed and available in `PATH`.
@@ -52,8 +47,6 @@ the output file.
 
 ```bash
 source lib/dns.lib
-traceroute_scan example.com
-traceroute_scan example.com example.com-route.txt
 ```
 
 The `traceroute` command must be installed and available in `PATH`.

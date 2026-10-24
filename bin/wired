@@ -1,0 +1,22 @@
+# Wired  Copyright (C) 2026  Nabil Ahmed
+#!/bin/bash
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
+#Libraries
+source "$SCRIPT_DIR/../lib/dns.lib"
+source "$SCRIPT_DIR/../lib/fuzzing.lib"
+source "$SCRIPT_DIR/../lib/reporting.lib"
+
+#Welcome message
+echo "================================================================"
+echo "Wired - A tool for reconnessance and information gathering"
+echo "Author: Nabil Ahmed"
+echo "Version: 1.0"
+echo "================================================================\n"
+
+#Input
+echo "Please make sure you are in the directory where you want to save the results."
+echo "This script follows strict 20 rps rate limit to avoid being blocked by the target."
+echo "Enter the target domain: "
+read DOMAIN

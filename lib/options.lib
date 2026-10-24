@@ -1,0 +1,35 @@
+# Wired  Copyright (C) 2026  Nabil Ahmed
+
+show_help()
+{
+    cat <<'EOF'
+Usage: wired <domain>
+       wired -h
+       wired --help
+
+Run WHOIS, nslookup, traceroute, and Nmap checks for a domain. Each scan
+requires interactive authorization confirmation. Reports are saved under
+reports/<domain>/ in the current directory.
+
+Options:
+  -h, --help  Show this help message and exit
+EOF
+}
+
+handle_options()
+{
+    case "${1:-}" in
+        -h|--help)
+            show_help
+            return 0
+            ;;
+        -*)
+            printf 'Error: unknown option: %s\n' "$1" >&2
+            show_help >&2
+            return 2
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}

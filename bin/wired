@@ -59,6 +59,10 @@ run_confirmed_scan()
 set -Eeuo pipefail
 trap 'error_handler "$?" "$LINENO" "$BASH_COMMAND"' ERR
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+source "$REPO_DIR/lib/options.lib"
+
 #Welcome message
 printf '%s\n' \
     'W W   W III RRRR  EEEEE DDDD' \
@@ -74,8 +78,16 @@ printf '%s\n' \
     'Version: 1.0' \
     '============================================================'
 
+option_status=0
+handle_options "$@" || option_status=$?
+if (( option_status == 0 )); then
+    exit 0
+elif (( option_status != 1 )); then
+    exit "$option_status"
+fi
+
 if [[ $# -ne 1 ]]; then
-    printf 'Usage: wired <domain>\n' >&2
+    show_help >&2
     exit 2
 fi
 
@@ -87,8 +99,6 @@ if [[ ! "$DOMAIN" =~ ^([[:alnum:]]([[:alnum:]-]{0,61}[[:alnum:]])?\.)+[[:alpha:]
 fi
 
 #Directory setup
-SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-REPO_DIR="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 source "$REPO_DIR/lib/dns.lib"
 
 REPORT_DIR="$PWD/reports/$DOMAIN"

@@ -28,7 +28,7 @@ install-tools:
 install-app:
 	install -d "$(DESTDIR)$(APPDIR)/bin" "$(DESTDIR)$(APPDIR)/lib" "$(DESTDIR)$(APPDIR)/res" "$(DESTDIR)$(BINDIR)"
 	install -m 755 bin/wired "$(DESTDIR)$(APPDIR)/bin/wired"
-	install -m 644 lib/dns.lib lib/fuzzing.lib "$(DESTDIR)$(APPDIR)/lib/"
+	install -m 644 lib/dns.lib lib/fuzzing.lib lib/options.lib "$(DESTDIR)$(APPDIR)/lib/"
 	install -m 644 res/subdomain.txt res/directory.txt "$(DESTDIR)$(APPDIR)/res/"
 	printf '%s\n' '#!/bin/sh' 'exec "$(APPDIR)/bin/wired" "$$@"' > "$(DESTDIR)$(BINDIR)/wired"
 	chmod 755 "$(DESTDIR)$(BINDIR)/wired"
@@ -38,6 +38,7 @@ uninstall:
 		"$(DESTDIR)$(APPDIR)/bin/wired" \
 		"$(DESTDIR)$(APPDIR)/lib/dns.lib" \
 		"$(DESTDIR)$(APPDIR)/lib/fuzzing.lib" \
+		"$(DESTDIR)$(APPDIR)/lib/options.lib" \
 		"$(DESTDIR)$(APPDIR)/res/subdomain.txt" \
 		"$(DESTDIR)$(APPDIR)/res/directory.txt"
 	@for directory in \

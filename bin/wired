@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Wired  Copyright (C) 2026  Nabil Ahmed
 
+#Error handlers
 error_handler()
 {
     local exit_code="$1"
@@ -9,6 +10,17 @@ error_handler()
 
     printf 'Error: command failed at line %s (exit %s): %s\n' \
         "$line_number" "$exit_code" "$failed_command" >&2
+    exit "$exit_code"
+}
+
+scan_failure_handler()
+{
+    local scan_name="$1"
+    local exit_code="$2"
+    local output_file="$3"
+
+    printf 'Error: %s scan failed with exit status %s. Check the report file: %s\n' \
+        "$scan_name" "$exit_code" "$output_file" >&2
     exit "$exit_code"
 }
 
@@ -32,7 +44,11 @@ run_confirmed_scan()
 
     case "$answer" in
         y|Y|yes|YES|Yes)
-            "$scan_function" "$DOMAIN" "$output_file"
+            local scan_exit_code=0
+            "$scan_function" "$DOMAIN" "$output_file" || scan_exit_code=$?
+            if (( scan_exit_code != 0 )); then
+                scan_failure_handler "$scan_name" "$scan_exit_code" "$output_file"
+            fi
             ;;
         *)
             printf 'Skipping %s scan.\n' "$scan_name"
@@ -77,6 +93,7 @@ source "$REPO_DIR/lib/dns.lib"
 
 REPORT_DIR="$PWD/reports/$DOMAIN"
 mkdir -p "$REPORT_DIR"
+
 
 #Scans
 printf 'Writing scan results to %s\n' "$REPORT_DIR"

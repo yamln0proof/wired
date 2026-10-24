@@ -45,6 +45,13 @@ trap 'error_handler "$?" "$LINENO" "$BASH_COMMAND"' ERR
 
 #Welcome message
 printf '%s\n' \
+    'W W   W III RRRR  EEEEE DDDD' \
+    'W W   W  I  R   R E     D   D' \
+    'W W W W  I  RRRR  EEEE  D   D' \
+    'W W W W  I  R R   E     D   D' \
+    ' W   W  III R  RR EEEEE DDDD'
+
+printf '%s\n' \
     '============================================================' \
     'Wired - Reconnaissance and Information Gathering' \
     'Author: Nabil Ahmed' \

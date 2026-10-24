@@ -1,2 +1,2 @@
 # wired
-A tool for reconnessance and information gathering
+A tool for reconnaissance and information gathering

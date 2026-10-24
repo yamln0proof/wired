@@ -1,22 +1,83 @@
+#!/usr/bin/env bash
 # Wired  Copyright (C) 2026  Nabil Ahmed
-#!/bin/bash
 
-SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+error_handler()
+{
+    local exit_code="$1"
+    local line_number="$2"
+    local failed_command="$3"
 
-#Libraries
-source "$SCRIPT_DIR/../lib/dns.lib"
-source "$SCRIPT_DIR/../lib/fuzzing.lib"
-source "$SCRIPT_DIR/../lib/reporting.lib"
+    printf 'Error: command failed at line %s (exit %s): %s\n' \
+        "$line_number" "$exit_code" "$failed_command" >&2
+    exit "$exit_code"
+}
+
+# Run a scan with interactive confirmation
+run_confirmed_scan()
+{
+    local scan_name="$1"
+    local scan_function="$2"
+    local output_file="$3"
+    local answer
+
+    if [[ ! -t 0 ]]; then
+        printf 'Skipping %s because interactive authorization confirmation is unavailable.\n' "$scan_name"
+        return 0
+    fi
+
+    if ! IFS= read -r -p "Only continue if you are authorized to assess $DOMAIN. Run $scan_name? [y/N] " answer; then
+        printf 'Skipping %s because confirmation was unavailable.\n' "$scan_name"
+        return 0
+    fi
+
+    case "$answer" in
+        y|Y|yes|YES|Yes)
+            "$scan_function" "$DOMAIN" "$output_file"
+            ;;
+        *)
+            printf 'Skipping %s scan.\n' "$scan_name"
+            ;;
+    esac
+}
+
+set -Eeuo pipefail
+trap 'error_handler "$?" "$LINENO" "$BASH_COMMAND"' ERR
 
 #Welcome message
-echo "================================================================"
-echo "Wired - A tool for reconnessance and information gathering"
-echo "Author: Nabil Ahmed"
-echo "Version: 1.0"
-echo "================================================================\n"
+printf '%s\n' \
+    '============================================================' \
+    'Wired - Reconnaissance and Information Gathering' \
+    'Author: Nabil Ahmed' \
+    'Version: 1.0' \
+    '============================================================'
 
-#Input
-echo "Please make sure you are in the directory where you want to save the results."
-echo "This script follows strict 20 rps rate limit to avoid being blocked by the target."
-echo "Enter the target domain: "
-read DOMAIN
+if [[ $# -ne 1 ]]; then
+    printf 'Usage: wired <domain>\n' >&2
+    exit 2
+fi
+
+#Domain validation
+DOMAIN="${1%.}"
+if [[ ! "$DOMAIN" =~ ^([[:alnum:]]([[:alnum:]-]{0,61}[[:alnum:]])?\.)+[[:alpha:]]{2,63}$ ]]; then
+    printf 'Error: provide a valid domain name.\nUsage: wired <domain>\n' >&2
+    exit 2
+fi
+
+#Directory setup
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+source "$REPO_DIR/lib/dns.lib"
+
+REPORT_DIR="$PWD/reports/$DOMAIN"
+mkdir -p "$REPORT_DIR"
+
+#Scans
+printf 'Writing scan results to %s\n' "$REPORT_DIR"
+run_confirmed_scan "WHOIS" whois_scan "$REPORT_DIR/${DOMAIN}_whois.txt"
+run_confirmed_scan "nslookup" nslookup_scan "$REPORT_DIR/${DOMAIN}_nslookup.txt"
+run_confirmed_scan "traceroute" traceroute_scan "$REPORT_DIR/${DOMAIN}_traceroute.txt"
+
+printf 'Nmap will check the 100 most common TCP ports using a polite timing profile.\n'
+run_confirmed_scan "Nmap" nmap_scan "$REPORT_DIR/${DOMAIN}_nmap.txt"
+
+printf 'Scan complete. Reports saved in %s\n' "$REPORT_DIR"

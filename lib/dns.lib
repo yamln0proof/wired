@@ -4,15 +4,76 @@
 
 whois_scan()
 {
-    whois $DOMAIN > ip.txt
+    local domain="${1:-${DOMAIN:-}}"
+    domain="${domain%.}"
+    local output_file="${2:-${domain}_whois.txt}"
+
+    if [[ ! "$domain" =~ ^([[:alnum:]]([[:alnum:]-]{0,61}[[:alnum:]])?\.)+[[:alpha:]]{2,63}\.?$ ]]; then
+        printf 'Usage: wired <domain> \n' >&2
+        return 2
+    fi
+
+    if ! command -v whois >/dev/null 2>&1; then
+        printf 'Error: whois is required but was not found in PATH.\n' >&2
+        return 127
+    fi
+
+    whois "$domain" > "$output_file"
 }
 
 nslookup_scan()
 {
-    nslookup $DOMAIN > ns.txt
+    local domain="${1:-${DOMAIN:-}}"
+    domain="${domain%.}"
+    local output_file="${2:-${domain}_nslookup.txt}"
+
+    if [[ ! "$domain" =~ ^([[:alnum:]]([[:alnum:]-]{0,61}[[:alnum:]])?\.)+[[:alpha:]]{2,63}\.?$ ]]; then
+        printf 'Usage: wired <domain> \n' >&2
+        return 2
+    fi
+
+    if ! command -v nslookup >/dev/null 2>&1; then
+        printf 'Error: nslookup is required but was not found in PATH.\n' >&2
+        return 127
+    fi
+
+    nslookup "$domain" > "$output_file"
 }
 
 traceroute_scan()
 {
-    traceroute $IP > netroute.txt
+    local domain="${1:-${DOMAIN:-}}"
+    domain="${domain%.}"
+    local output_file="${2:-${domain}_netroute.txt}"
+
+    if [[ ! "$domain" =~ ^([[:alnum:]]([[:alnum:]-]{0,61}[[:alnum:]])?\.)+[[:alpha:]]{2,63}\.?$ ]]; then
+        printf 'Usage: wired <domain> \n' >&2
+        return 2
+    fi
+
+    if ! command -v traceroute >/dev/null 2>&1; then
+        printf 'Error: traceroute is required but was not found in PATH.\n' >&2
+        return 127
+    fi
+
+    traceroute "$domain" > "$output_file"
+}
+
+nmap_scan()
+{
+    local domain="${1:-${DOMAIN:-}}"
+    domain="${domain%.}"
+    local output_file="${2:-${domain}_nmap.txt}"
+
+    if [[ ! "$domain" =~ ^([[:alnum:]]([[:alnum:]-]{0,61}[[:alnum:]])?\.)+[[:alpha:]]{2,63}$ ]]; then
+        printf 'Usage: nmap_scan <domain> [output-file]\n' >&2
+        return 2
+    fi
+
+    if ! command -v nmap >/dev/null 2>&1; then
+        printf 'Error: nmap is required but was not found in PATH.\n' >&2
+        return 127
+    fi
+
+    nmap -F -T2 -oN "$output_file" "$domain"
 }

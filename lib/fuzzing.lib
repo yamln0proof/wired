@@ -1,1 +1,68 @@
 # Wired  Copyright (C) 2026  Nabil Ahmed
+
+subdomain_fuzz()
+{
+    local domain="${1:-${DOMAIN:-}}"
+    domain="${domain%.}"
+    local output_file="${2:-${domain}_subdomains.txt}"
+    local lib_dir
+
+    if [[ ! "$domain" =~ ^([[:alnum:]]([[:alnum:]-]{0,61}[[:alnum:]])?\.)+[[:alpha:]]{2,63}\.?$ ]]; then
+        printf 'Usage: subdomain_fuzz <domain> [output-file]\n' >&2
+        return 2
+    fi
+
+    if ! command -v ffuf >/dev/null 2>&1; then
+        printf 'Error: ffuf is required but was not found in PATH.\n' >&2
+        return 127
+    fi
+
+    lib_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)" || return
+    local wordlist="$lib_dir/../res/subdomain.txt"
+    if [[ ! -r "$wordlist" ]]; then
+        printf 'Error: subdomain wordlist is not readable: %s\n' "$wordlist" >&2
+        return 1
+    fi
+
+    ffuf \
+        -w "$wordlist" \
+        -u "https://FUZZ.${domain}" \
+        -mc 200 \
+        -rate 20 \
+        -of md \
+        -o "$output_file"
+}
+
+directory_fuzz()
+{
+    local domain="${1:-${DOMAIN:-}}"
+    domain="${domain%.}"
+    local output_file="${2:-${domain}_directories.txt}"
+    local lib_dir
+
+    if [[ ! "$domain" =~ ^([[:alnum:]]([[:alnum:]-]{0,61}[[:alnum:]])?\.)+[[:alpha:]]{2,63}\.?$ ]]; then
+        printf 'Usage: directory_fuzz <domain> [output-file]\n' >&2
+        return 2
+    fi
+
+    if ! command -v ffuf >/dev/null 2>&1; then
+        printf 'Error: ffuf is required but was not found in PATH.\n' >&2
+        return 127
+    fi
+
+    lib_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)" || return
+    local wordlist="$lib_dir/../res/directory.txt"
+    if [[ ! -r "$wordlist" ]]; then
+        printf 'Error: directory wordlist is not readable: %s\n' "$wordlist" >&2
+        return 1
+    fi
+
+    ffuf \
+        -w "$wordlist" \
+        -u "https://${domain}/FUZZ" \
+        -mc 200 \
+        -rate 20 \
+        -of md \
+        -o "$output_file"
+
+}

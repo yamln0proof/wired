@@ -110,6 +110,8 @@ printf 'Writing scan results to %s\n' "$REPORT_DIR"
 run_confirmed_scan "WHOIS" whois_scan "$REPORT_DIR/${DOMAIN}_whois.txt"
 run_confirmed_scan "nslookup" nslookup_scan "$REPORT_DIR/${DOMAIN}_nslookup.txt"
 run_confirmed_scan "traceroute" traceroute_scan "$REPORT_DIR/${DOMAIN}_traceroute.txt"
+run_confirmed_scan "subdomain fuzzing" subdomain_fuzz "$REPORT_DIR/${DOMAIN}_subdomain_fuzz.txt"
+run_confirmed_scan "directory fuzzing" directory_fuzz "$REPORT_DIR/${DOMAIN}_directory_fuzz.txt"
 
 printf 'Nmap will check the 100 most common TCP ports using a polite timing profile.\n'
 run_confirmed_scan "Nmap" nmap_scan "$REPORT_DIR/${DOMAIN}_nmap.txt"

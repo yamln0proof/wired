@@ -5,7 +5,7 @@ DESTDIR ?=
 SUDO ?= sudo
 APT_GET ?= apt-get
 
-.PHONY: install install-app install-tools
+.PHONY: install install-app install-tools uninstall
 
 install: install-tools install-app
 
@@ -32,3 +32,20 @@ install-app:
 	install -m 644 res/subdomain.txt res/directory.txt "$(DESTDIR)$(APPDIR)/res/"
 	printf '%s\n' '#!/bin/sh' 'exec "$(APPDIR)/bin/wired" "$$@"' > "$(DESTDIR)$(BINDIR)/wired"
 	chmod 755 "$(DESTDIR)$(BINDIR)/wired"
+
+uninstall:
+	rm -f "$(DESTDIR)$(BINDIR)/wired" \
+		"$(DESTDIR)$(APPDIR)/bin/wired" \
+		"$(DESTDIR)$(APPDIR)/lib/dns.lib" \
+		"$(DESTDIR)$(APPDIR)/lib/fuzzing.lib" \
+		"$(DESTDIR)$(APPDIR)/res/subdomain.txt" \
+		"$(DESTDIR)$(APPDIR)/res/directory.txt"
+	@for directory in \
+		"$(DESTDIR)$(APPDIR)/bin" \
+		"$(DESTDIR)$(APPDIR)/lib" \
+		"$(DESTDIR)$(APPDIR)/res" \
+		"$(DESTDIR)$(APPDIR)"; do \
+		if [ -d "$$directory" ] && ! rmdir "$$directory" 2>/dev/null; then \
+			echo "Leaving non-empty or inaccessible directory: $$directory" >&2; \
+		fi; \
+	done

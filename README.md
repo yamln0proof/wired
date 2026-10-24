@@ -1,4 +1,4 @@
-# wired
+# Wired
 A tool for reconnaissance and information gathering
 
 ## Subdomain fuzzing
@@ -121,8 +121,15 @@ that required commands are available with:
 command -v whois nslookup traceroute nmap ffuf
 ```
 
+Uninstall Wired (this does not remove the external tools):
+
+```bash
+make uninstall
+```
+
 Override `PREFIX` to install under a different prefix, or set `DESTDIR` when
 running `make install-app` to stage the installation in another directory.
+Use the same `PREFIX` and `DESTDIR` values with `make uninstall`.
 After installation, run Wired with a domain:
 
 ```bash

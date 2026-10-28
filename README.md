@@ -1,18 +1,6 @@
 # Wired
 A tool for reconnaissance and information gathering
 
-## Subdomain fuzzing
-
-Source the fuzzing library and pass a domain you are authorized to assess. The
-function uses `res/subdomain.txt`, limits the scan to 20 requests per second,
-and writes ffuf's readable report to `example.com_subdomains.txt` by default.
-An optional second argument sets the output file.
-
-```bash
-source lib/fuzzing.lib
-```
-
-The `ffuf` executable must be installed and available in `PATH`.
 
 ## WHOIS lookup
 
@@ -39,17 +27,19 @@ source lib/dns.lib
 
 The `nslookup` command must be installed and available in `PATH`.
 
-## Traceroute
+## Nmap scan
 
-Source the DNS library and trace the network route to a domain. Results are
-saved to `<domain>_netroute.txt` by default; an optional second argument sets
-the output file.
+Source the DNS library and scan common TCP ports on a domain you are authorized
+to assess. Results are saved to `<domain>_nmap.txt` by default; an optional
+second argument sets the output file. The scan uses Nmap's polite timing
+profile.
 
 ```bash
 source lib/dns.lib
+nmap_scan example.com
 ```
 
-The `traceroute` command must be installed and available in `PATH`.
+The `nmap` command must be installed and available in `PATH`.
 
 ## Running Wired
 
